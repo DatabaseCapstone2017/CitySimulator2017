@@ -50,7 +50,7 @@ namespace DataAccessLayer
 		{
 			get
 			{
-				var database = client.GetDatabase("Prototype");
+				var database = client.GetDatabase("default");
 				return database;
 			}
 		}
@@ -296,7 +296,7 @@ namespace DataAccessLayer
 		/// Changed method to use new validation style
 		/// </summary>
 		/// <param name="buildings">A list of the buildings to be inserted into the database</param>
-		public void InsertBuildings(IEnumerable<Building> buildings)
+		public Task InsertBuildings(IEnumerable<Building> buildings)
 		{
             List<BuildingDB> buildingsDB = new List<BuildingDB>();
             foreach (Building b in buildings)
@@ -308,14 +308,13 @@ namespace DataAccessLayer
 				if (!DALValidator.DALBuildingValidator(b))
 				{
 					System.Console.WriteLine("Building Id: " + b.Guid.ToString() + " did not meet validation rules.");
-					return;
+					return null;
 				}
 			}
 
 			//TODO: we need to decide if inserting collection of buildings is needed
-
-			//var buildingCol = Database.GetCollection<Building>("Buildings");
-			//buildingCol.InsertMany(buildings);
+			var buildingCol = Database.GetCollection<Building>("Buildings");
+			return buildingCol.InsertManyAsync(buildings);
 		}
 
 
@@ -407,7 +406,7 @@ namespace DataAccessLayer
 			var saveStateData = collection.Find(new BsonDocument()).FirstOrDefault();
 			if (saveStateData != null)
 			{
-				SaveState mySaveState = BsonSerializer.Deserialize<SaveState>(saveStateData.ToJson());
+                SaveState mySaveState = BsonSerializer.Deserialize<SaveState>(saveStateData.ToJson());
 				return mySaveState;
 			}
 			Console.WriteLine("SaveState collection is empty.");
@@ -514,6 +513,7 @@ namespace DataAccessLayer
 		/// <param name="endShift">The ending time of when the person's work ends</param>
 		public async void UpdatePerson(Person person)
 		{
+            //michael
 			var collection = Database.GetCollection<BsonDocument>("Person");
 			var filter = Builders<BsonDocument>.Filter.Eq("guid", person.Id);
 			var personListData = await collection.Find(filter).ToListAsync();
@@ -561,8 +561,10 @@ namespace DataAccessLayer
 		/// <param name="rating">The rating of the Residential building</param>
 		/// <param name="isTall">Boolean if the building is tall or not</param>
 		/// <param name="capacity">The capacity of the Residential building</param>
+
 		public async void UpdateResidentialBuilding(Residential residential)
 		{
+            //michael got this
 			var collection = Database.GetCollection<BsonDocument>("Residential");
 			var filter = Builders<BsonDocument>.Filter.Eq("guid", residential.Id);
 			var residentialListData = await collection.Find(filter).ToListAsync();
@@ -573,6 +575,7 @@ namespace DataAccessLayer
 			}
 
 			ResidentialDB residentialBuildingToUpdate = new ResidentialDB(residential);
+
 			if (!DALValidator.DALResidentialBuildingValidator(residentialBuildingToUpdate))
 			{
 				Console.WriteLine("Can not update residential building, at least one of the input field is invalid.");
@@ -603,7 +606,7 @@ namespace DataAccessLayer
         /// <param name="capacity">The capacity of the Commercial building</param>
         /// <param name="retailPrice">The retail price of the Commercial building</param>
         /// <param name="inventoryCount">The inventory count of the Commercial building</param>
-        public async void UpdateCommercialBuilding(Commercial commercial)
+    public async void UpdateCommercialBuilding(Commercial commercial)
 		{
 			var collection = Database.GetCollection<BsonDocument>("Commercial");
 			var filter = Builders<BsonDocument>.Filter.Eq("guid", commercial.Id);
@@ -615,6 +618,7 @@ namespace DataAccessLayer
 			}
 
 			CommercialDB commercialBuildingToUpdate = new CommercialDB(commercial);
+
 			if (!DALValidator.DALCommercialBuildingValidator(commercialBuildingToUpdate))
 			{
 				Console.WriteLine("Can not update commercial building, at least one of the input field is invalid.");
@@ -687,30 +691,30 @@ namespace DataAccessLayer
         /// <param name="guid">The GUID of the road object being updated</param>
         /// <param name="xPoint">The X coordinate of the road being updated</param>
         /// <param name="yPoint">The Y coordinate of the road being updated</param>
-        public async void UpdateRoad(Road road)
-		{
-			var collection = Database.GetCollection<BsonDocument>("Road");
-			var filter = Builders<BsonDocument>.Filter.Eq("guid", road.Id);
-			var roadListData = await collection.Find(filter).ToListAsync();
-			if (roadListData == null || roadListData.Count == 0)
-			{
-				Console.WriteLine("Can not update road, guid is invalid.");
-				return;
-			}
+      public async void UpdateRoad(Road road)
+		  {
+          var collection = Database.GetCollection<BsonDocument>("Road");
+          var filter = Builders<BsonDocument>.Filter.Eq("guid", road.Id);
+          var roadListData = await collection.Find(filter).ToListAsync();
+          if (roadListData == null || roadListData.Count == 0)
+          {
+            Console.WriteLine("Can not update road, guid is invalid.");
+            return;
+          }
 
-			RoadDB roadToUpdate = new RoadDB(road);
-			if (!DALValidator.DALRoadValidator(roadToUpdate))
-			{
-				Console.WriteLine("Can not update road, at least one of the input field is invalid.");
-				return;
-			}
+          RoadDB roadToUpdate = new RoadDB(road);
+          if (!DALValidator.DALRoadValidator(roadToUpdate))
+          {
+            Console.WriteLine("Can not update road, at least one of the input field is invalid.");
+            return;
+          }
 
-			var update = Builders<BsonDocument>.Update
-				.Set("guid", road.Id)
-				.Set("XPoint", road.Point.X)
-				.Set("YPoint", road.Point.Z);
-			var result = await collection.UpdateOneAsync(filter, update);
-		}
+          var update = Builders<BsonDocument>.Update
+            .Set("guid", road.Id)
+            .Set("XPoint", road.Point.X)
+            .Set("YPoint", road.Point.Z);
+          var result = await collection.UpdateOneAsync(filter, update);
+		    }
 
 		/// <summary>
 		/// Update clock
@@ -809,11 +813,11 @@ namespace DataAccessLayer
 		///     - reflects schema changes
 		/// </summary>
 		/// <param name="guid">The GUID of the person being deleted from the DB</param>
-		public async void DeleteOnePerson(Guid guid)
+		public async void DeleteOnePerson(Person person)
 		{
 			var collection = Database.GetCollection<PersonDB>("Person");
 			//what to do here?
-			var filter = Builders<PersonDB>.Filter.Eq("guid", guid);
+			var filter = Builders<PersonDB>.Filter.Eq("guid", person.Id);
 			await collection.DeleteOneAsync(filter);
 		}
 

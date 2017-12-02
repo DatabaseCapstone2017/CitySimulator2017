@@ -24,11 +24,11 @@ namespace ServerForTheLogic.DALValidator.ValidationHelper
         /// </summary>
         /// <param name="clockNetMinutes"></param>
         /// <returns></returns>
-        public static Boolean isValidClockNetMinutes(uint clockNetMinutes)
+        public static Boolean isValidClockNetMinutes(UInt32 clockNetMinutes)
         {
             if (clockNetMinutes < 0 || clockNetMinutes > 59)
             {
-                Console.WriteLine("Invalid clock net minutes: " + clockNetMinutes);
+                //Console.WriteLine("Invalid clock net minutes: " + clockNetMinutes);
                 return false;
             }
             return true;
@@ -45,11 +45,12 @@ namespace ServerForTheLogic.DALValidator.ValidationHelper
         /// </summary>
         /// <param name="clockNetHours"></param>
         /// <returns></returns>
-        public static Boolean isValidClockNetHours(uint clockNetHours)
+
+        public static Boolean isValidClockNetHours(UInt32 clockNetHours)
         {
             if (clockNetHours < 0 || clockNetHours > 23)
             {
-                Console.WriteLine("Invalid clock net hours: " + clockNetHours);
+                //Console.WriteLine("Invalid clock net hours: " + clockNetHours);
                 return false;
             }
             return true;
@@ -66,11 +67,12 @@ namespace ServerForTheLogic.DALValidator.ValidationHelper
         /// </summary>
         /// <param name="clockNetHours"></param>
         /// <returns></returns>
-        public static Boolean isValidClockNetDays(uint clockNetDays)
+        public static bool isValidClockNetDays(UInt32 clockNetDays)
+
         {
             if (clockNetDays < 0 || clockNetDays > 365)
             {
-                Console.WriteLine("Invalid clock net days: " + clockNetDays);
+                //Console.WriteLine("Invalid clock net days: " + clockNetDays);
                 return false;
             }
             return true;
@@ -87,11 +89,12 @@ namespace ServerForTheLogic.DALValidator.ValidationHelper
         /// </summary>
         /// <param name="clockNetYears"></param>
         /// <returns></returns>
-        public static Boolean isValidClockNetYears(uint clockNetYears)
+        public static bool isValidClockNetYears(UInt32 clockNetYears)
         {
-            if (clockNetYears == uint.MaxValue)
+            if (clockNetYears < 0 || clockNetYears == UInt32.MaxValue)
+
             {
-                Console.WriteLine("Invalid clock net years: " + clockNetYears);
+               //Console.WriteLine("Invalid clock net years: " + clockNetYears);
                 return false;
             }
             return true;

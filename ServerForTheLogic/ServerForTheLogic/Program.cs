@@ -9,6 +9,7 @@ using CitySimNetworkService;
 using DBInterface;
 using DBInterface.Infrastructure;
 using DataAccessLayer;
+using DBInterface.Econ;
 
 namespace ServerForTheLogic
 {
@@ -34,17 +35,6 @@ namespace ServerForTheLogic
         private const int STANDARD_DEVIATION_DEATH = 14;
         private static City city;
 
-
-        public static void Start(string[] args)
-        {
-
-        }
-
-        public static void Stop()
-        {
-            // onstop code here
-        }
-
         /// <summary>
         /// Entry point for the city simulator program
         /// <para/> Last editted:  2017-10-02
@@ -69,31 +59,41 @@ namespace ServerForTheLogic
             //JsonSerializer serializer = new JsonSerializer();
             city = JsonConvert.DeserializeObject<City>(readText, settings);
 
+
+
             if (city == null)
             {
                 city = new City(fullUpdateQueue, partialUpdateQueue);
             }
-            city.Dump();
-            city.printCity();
 
+            //city.CommercialBlocksToFill.Dump();
+            //city.PartialUpdateList.Dump();
+            city.printCity();
+            
+
+            foreach (Block b in city.BlockMap)
+                if (b.Type != BlockType.Empty)
+                {
+                    city.addRoads(b);
+                }
+                    
+            int max = 0;
+            foreach (Person p in city.AllPeople)
+            {
+                if (p.DaysLeft > max)
+                    max = p.DaysLeft;
+            }
+            Console.WriteLine(max);
             city.InitSimulation(fullUpdateQueue, partialUpdateQueue);
+            foreach (Block b in city.BlockMap)
+                city.setAdjacents(b);
+
+
+            
             GetInput();
         }
 
 
-        /// <summary>
-        /// Saves the city state to a file, so it can be loaded from the backup later.
-        /// </summary>
-        /// <param name="sendableData"></param>
-        public void SaveCityState()
-        {
-            JsonSerializerSettings settings = new JsonSerializerSettings();
-            settings.Converters.Add(new LocationConverter());
-
-            string dataToSend = JsonConvert.SerializeObject(city, settings);
-
-            File.WriteAllText(@"..\..\SerializedCity\city.json", dataToSend);
-        }
 
         private static void GetInput()
         {
@@ -128,26 +128,8 @@ namespace ServerForTheLogic
                 }
                 if (commands[0].Equals("workplaces", StringComparison.CurrentCultureIgnoreCase))
                 {
-                    if (commands.Length == 2)
-                    {
-                        List<Building> temp = new List<Building>();
-                        if (commands[1].Equals("commercial", StringComparison.CurrentCultureIgnoreCase))
-                        {
-                            foreach (Building b in city.AllBuildings)
-                                Console.WriteLine(b.GetType());//if ()
-                                //    temp.Add(b);
-                            temp.Dump();
-                        }
-                        if (commands[1].Equals("industrial", StringComparison.CurrentCultureIgnoreCase))
-                        {
-                            foreach (Building b in city.AllBuildings)
-                                if (b is Industrial)
-                                    temp.Add(b);
-                            temp.Dump();
-                        }
-                        city.AllBuildings.Dump();
-                    }
-
+                    Market.CommercialBusinesses.Dump();
+                    Market.IndustrialBusinesses.Dump();
                 }
                 if (commands[0].Equals("stop", StringComparison.CurrentCultureIgnoreCase))
                 {
@@ -164,6 +146,13 @@ namespace ServerForTheLogic
                 if (commands[0].Equals("clock", StringComparison.CurrentCultureIgnoreCase))
                 {
                     city.clock.Dump();
+                }
+                if (commands[0].Equals("roads", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    foreach (Block b in city.BlockMap)
+                    {
+                        city.printBlock(b);
+                    }
                 }
                 if (cmd.Equals("print city"))
                 {
@@ -198,7 +187,11 @@ namespace ServerForTheLogic
                 }
                 if (cmd.Equals("save"))
                 {
-                    
+                    city.SaveState();
+                }
+                if (cmd.Equals("count"))
+                {
+                    city.PropertyCounts();
                 }
 
             }

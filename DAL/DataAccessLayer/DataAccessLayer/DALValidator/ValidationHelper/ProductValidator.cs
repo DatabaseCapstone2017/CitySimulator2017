@@ -12,12 +12,16 @@ namespace ServerForTheLogic.DALValidator.ValidationHelper
     /// Helper class for DALValidator. 
     /// This class contains all the validation rules for Product.
     /// 
+    /// Author: Sean
+    /// Date: 2017-12-01
+    /// Update: Changed visibility to public for testing purposes
+    /// 
     /// <para> Author: Bill </para>
     /// Date: 2017-11-12
     /// Based on: N/A   
     /// Update: N/A
     /// </summary>
-    class ProductValidator
+    public class ProductValidator
     {
         /// <summary>
         /// Product Name Validator

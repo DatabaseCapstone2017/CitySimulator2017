@@ -8,12 +8,16 @@ namespace ServerForTheLogic.DALValidator
     /// Helper class for DALValidator. 
     /// This class contains all the validation rules for Industrial Buildings.
     /// 
+    /// Author: Sean
+    /// Date: 2017-12-01
+    /// Update: Changed visibility to public for testing purposes
+    ///  
     /// Author: Bill 
     /// Date: 2017-11-12
     /// Based on: N/A   
     /// Update: N/A
     /// </summary>
-    class IndustrialValidator : BuildingValidator
+    public class IndustrialValidator : BuildingValidator
     {
         /// <summary>
         /// Industrial Building Inventory Count Validator

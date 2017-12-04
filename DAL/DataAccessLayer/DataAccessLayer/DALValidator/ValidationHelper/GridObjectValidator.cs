@@ -13,12 +13,16 @@ namespace ServerForTheLogic.DALValidator
     /// Helper class for DALValidator. 
     /// This class contains all the general validations that can be reused by  GridObject classes.
     /// 
+    /// Author: Sean
+    /// Date: 2017-12-01
+    /// Update: Changed visibility to public for testing purposes
+    /// 
     /// Author: Bill 
     /// Date: 2017-11-12
     /// Based on: N/A   
     /// Update: N/A
     /// </summary>
-    class GridObjectValidator
+    public class GridObjectValidator
     {
         /// <summary>
         /// Regex for checking valid Guid

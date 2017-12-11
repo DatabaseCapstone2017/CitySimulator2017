@@ -413,49 +413,6 @@ namespace DataAccessLayer
 			return null;
 		}
 
-		///// <summary>
-		///// gets a person object
-		///// author: michael
-		///// date: 2017-10-15
-		///// update:
-		///// 2017-11-13 michael
-		///// changed from citizen to person. method is still the same.
-		///// </summary>
-		///// <param name="personguid"></param>
-		///// <returns>returns a list of persons as json documents</returns>
-		//public person getpersonbyguid(guid personguid)
-		//{
-		//    var citizenscol = database.getcollection<bsondocument>("person");
-		//    var filter = builders<bsondocument>.filter.eq("guid", personguid);
-		//    var document = citizenscol.find(filter).first(); // find a citizen based on the filter, first result.
-		//    if (document == null)
-		//    {
-		//        console.writeline("person guid: " + personguid + "does not exist in the collection");
-		//        return null;
-		//    }
-		//    person person = bsonserializer.deserialize<person>(document.tojson()); // stores it in a list, deserializes the document(?)
-		//    return person;
-		//}
-
-		///// <summary>
-		///// <para>
-		///// if the getcitizens method works then this one should work.
-		///// </para>
-		///// author: michael
-		///// date: 2017-10-16
-		///// </summary>
-		///// <param name="roadid"></param>
-		///// <returns></returns>
-		//public list<building> getbuildings(objectid buildid)
-		//{
-		//    var buildcol = database.getcollection<bsondocument>("buildings");
-		//    var filter = builders<bsondocument>.filter.eq("_id", buildid);
-		//    var document = buildcol.find(filter).first();
-		//    list<building> building = bsonserializer.deserialize<list<building>>(document.tojson());
-		//    return building;
-		//}
-
-
 
 		/* ==================== Update Section ==================== */
 		/*
@@ -467,50 +424,21 @@ namespace DataAccessLayer
          * 
          */
 
-		/// <summary>
-		/// <para>OLD DESCRIPTION! READ THE LATEST UPDATE FOR HOW TO USE THIS METHOD!</para>
-		/// <para>
-		/// update one citizen by its Id. 
-		/// if string field is empty string then there will be no change in the original string,
-		/// if int field == -1 then there will be no change in the original int value.
-		/// updated value also have to meet validation rules, otherwise there's no change to the old value.
-		/// </para> 
-		/// <para>
+		/// <summary> 
 		/// Author: Bill
 		/// Date: 2017-10-31
-		/// </para>
 		/// <para>
 		/// Updated: Micahel
 		/// Date: 2017-11-13 
 		/// Updated the method to use the new DAL convention. Uses PersonValidator.
-		/// </para>
-		/// <para>
+		///
 		/// Updated: Bill
 		/// Date: 2017-11-13
-		/// </para>
-		/// <para>LATEST VERSION</para>
-		/// <para>
-		/// Removed deserilizing The BSON and validating each parameter individually 
-		/// and replacing the old fields with the new one. Now the method creates a new Person object and validates the
-		/// new Person object. It then updates the Person document in the database. If the field is not being updated
-		/// then it must still be included even if it is not changed.
-		/// </para>
+		/// Updated: Michael and Connor
+		/// Date: 2017-11-30
+		/// Uses the new DALInterface design.
 		/// </summary>
-		/// <param name="guid">The GUID of the person that is being updated</param>
-		/// <param name="firstName">The first name of the person. Can be new if being updated or remain as the old one</param>
-		/// <param name="lastName">The last name of the person. Can be new if being updated or remain as the old one</param>
-		/// <param name="monthlyIncome">The monthly income of the person</param>
-		/// <param name="accountBalance">The monetary balance in the person's bank account</param>
-		/// <param name="workplaceID">The GUID of the person's work place</param>
-		/// <param name="workplaceX">The X coordinate of the person's work place</param>
-		/// <param name="workplaceY">The Y coordinate of the person's work place</param>
-		/// <param name="homeID">The GUID of the person's home</param>
-		/// <param name="homeX">The X coordinate of the person's home</param>
-		/// <param name="homeY">The Y coordinate of the person's home</param>
-		/// <param name="daysLeft">The number of days left the person has to live</param>
-		/// <param name="age">The current age of the person</param>
-		/// <param name="startShift">The starting time of when the person's work begins</param>
-		/// <param name="endShift">The ending time of when the person's work ends</param>
+		/// <param name="person">The person to be updated</param>
 		public async void UpdatePerson(Person person)
 		{
             //michael
@@ -555,12 +483,7 @@ namespace DataAccessLayer
 		/// Author: Bill
 		/// Date: 2017-11-13
 		/// </summary>
-		/// <param name="guid">The GUID of the Residential building</param>
-		/// <param name="xPoint">The X coordinate of the Residential building</param>
-		/// <param name="yPoint">The Y coordinate of the Residential building</param>
-		/// <param name="rating">The rating of the Residential building</param>
-		/// <param name="isTall">Boolean if the building is tall or not</param>
-		/// <param name="capacity">The capacity of the Residential building</param>
+		/// <param name="residential">The residential building to be updated</param>
 
 		public async void UpdateResidentialBuilding(Residential residential)
 		{
@@ -597,14 +520,7 @@ namespace DataAccessLayer
         /// Author: Bill
         /// Date: 2017-11-13
         /// </summary>
-        /// <param name="guid">The GUID of the Commercial building</param>
-        /// <param name="xPoint">The X coordinate of the Commercial building</param>
-        /// <param name="yPoint">The Y coordinate of the Commercial building</param>
-        /// <param name="rating">The rating of the Commercial building</param>
-        /// <param name="isTall">Boolean if the building is tall or not</param>
-        /// <param name="capacity">The capacity of the Commercial building</param>
-        /// <param name="retailPrice">The retail price of the Commercial building</param>
-        /// <param name="inventoryCount">The inventory count of the Commercial building</param>
+        /// <param name="commercial">The commercial building to be updated</param>
     public async void UpdateCommercialBuilding(Commercial commercial)
 		{
 			var collection = Database.GetCollection<BsonDocument>("Commercial");
@@ -641,15 +557,7 @@ namespace DataAccessLayer
         /// Author: Bill
         /// Date: 2017-11-13
         /// </summary>
-        /// <param name="guid">The GUID of the industrial building being updated</param>
-        /// <param name="xPoint">The X coordinate of the industrial building being updated</param>
-        /// <param name="yPoint">The Y coordinate of the industrial building being updated</param>
-        /// <param name="rating">The rating of the industrial building being updated</param>
-        /// <param name="isTall">Boolean if the building is tall or not</param>
-        /// <param name="capacity">The employee capacity of the industrial building being updated</param>
-        /// <param name="inventoryCount">The inventory count of the industrial building being updated</param>
-        /// <param name="productionCost">The cost it takes the building to produce one product</param>
-        /// <param name="wholesalePrice">The price the building sells its product to another building</param>
+        /// <param name="industrial">The industrial building to be updated</param>
         public async void UpdateIndustrialBuilding(Industrial industrial)
         {
             var collection = Database.GetCollection<BsonDocument>("Industrial");
@@ -685,9 +593,7 @@ namespace DataAccessLayer
         /// Author: Bill
         /// Date: 2017-11-13
         /// </summary>
-        /// <param name="guid">The GUID of the road object being updated</param>
-        /// <param name="xPoint">The X coordinate of the road being updated</param>
-        /// <param name="yPoint">The Y coordinate of the road being updated</param>
+        /// <param name="road">The road being updated</param>
       public async void UpdateRoad(Road road)
 		  {
           var collection = Database.GetCollection<BsonDocument>("Road");
@@ -719,10 +625,7 @@ namespace DataAccessLayer
 		/// Author: Bill
 		/// Date: 2017-11-13
 		/// </summary>
-		/// <param name="minutes">The minutes of the clock</param>
-		/// <param name="hours">The hours of the clock</param>
-		/// <param name="days">The days of the clock</param>
-		/// <param name="years">The years of the clock</param>
+		/// <param name="clock">The clock to be updated</param>
 		public async void UpdateClock(IClock clock)
 		{
 			var collection = Database.GetCollection<BsonDocument>("Clock");
@@ -754,8 +657,7 @@ namespace DataAccessLayer
 		/// Author: Bill
 		/// Date: 2017-11-13
 		/// </summary>
-		/// <param name="name">The name of the product to be updated</param>
-		/// <param name="globalCount">The global count of the product</param>
+		/// <param name="product">The product to be updated</param>
 		public async void UpdateProduct(Product product)
 		{
 			var collection = Database.GetCollection<BsonDocument>("Product");
